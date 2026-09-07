@@ -85,6 +85,12 @@ public class IntFIFO implements Queue<Integer> {
 
     @Override
     public int size() {
+        if(end == begin){
+            if(L[begin] == null){
+                return 0;
+            }
+            return cap;
+        }
         return Math.abs(end-begin);
     }
 
