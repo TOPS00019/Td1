@@ -1,7 +1,7 @@
-package container;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import static java.lang.Math.floor;
 
 public class IntFIFO implements Queue<Integer> {
     private int cap;
@@ -31,33 +31,32 @@ public class IntFIFO implements Queue<Integer> {
         q.insertElement(4);
         System.out.println(q.size());
 
-        //System.out.println(q.popElement());
-        //System.out.println(q.popElement());
-
-        //System.out.println(q.popElement());
 
     }
 
 
     @Override
     public boolean insertElement(Integer integer) {
-        if(end+1 == begin){
+        int old_cap = cap;
+        if((end) == begin && this.L[begin] != null){
+
             cap = (cap+1) * 2;
+
             Integer[] M = new Integer[cap];
-            for(int i=0; i<cap-1; i++){
+            for(int i=0; i<old_cap; i++){
                 if((i < end)){
                     M[i] = L[i];
                 }
                 else if(begin <= i){
-                    M[i+1] = L[i];
+                    M[i+(cap-old_cap)] = L[i];
                 }
             }
             L = M;
-            L[(end) % cap] = integer;
-            end = (end+1)%(cap+1);
+
         }
         L[(end) % cap] = integer;
-        end = (end+1)%(cap+1);
+        end = (end+1)%(cap);
+        begin +=  (cap-old_cap);
         return true;
 
     }
@@ -91,7 +90,12 @@ public class IntFIFO implements Queue<Integer> {
             }
             return cap;
         }
-        return Math.abs(end-begin);
+        else if(end > begin){
+            return Math.abs(end-begin);
+        }
+        else{
+            return cap - (begin-end);
+        }
     }
 
     @Override
