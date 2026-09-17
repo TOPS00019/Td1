@@ -1,16 +1,17 @@
 package container;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
-public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
+public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Iterable<E> {
     private int cap;
-    private Integer[] L;
+    private Object[] L;
     private int end;
 
 
-    public IntPriorityQueue (int capacity){
+    public GenPriorityQueue (int capacity){
         this.cap = capacity;
-        this.L = new Integer[cap];
+        this.L = new Object[cap];
         this.end = -1;
 
     }
@@ -19,25 +20,24 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
     }
 
-
     @Override
-    public boolean insertElement(Integer integer) {
+    public boolean insertElement(E e) {
         int old_cap = cap;
         if(end == cap-1){
             cap = (cap+1) * 2;
-            Integer[] M = new Integer[cap];
+            Object[] M = new Object[cap];
             for(int i=0; i<old_cap; i++){
-                 M[i] = L[i];
+                M[i] = L[i];
             }
             L = M;
         }
-        L[end+1] = integer;
+        L[end+1] = e;
         int k = end + 1;
         int parent = 0;
         while(k>0){
             parent = (int) Math.floor((k-1)/2);
-            if(L[parent] < L[k]){
-                int a  = L[parent];
+            if(((E) L[parent]).compareTo((E) L[k]) < 0){
+                Object a  = L[parent];
                 L[parent] = L[k];
                 L[k] = a;
                 k = parent;
@@ -52,19 +52,19 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     }
 
     @Override
-    public Integer element() {
-        if(this.isEmpty()){
+    public E element() {
+        if(cap == 0){
             return null;
         }
-        return L[0];
+        return (E) L[0];
     }
 
     @Override
-    public Integer popElement() {
-        if(this.isEmpty()){
+    public E popElement() {
+        if(cap == 0){
             return null;
         }
-        int a = L[0];
+        E a = (E) L[0];
         L[0] = L[end];
         L[end] = null;
         end--;
@@ -73,15 +73,15 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
             int fils1 = 2*k+1;
             int fils2 = 2*k+2;
             if(fils2<=end){
-                if(L[k] < L[fils1] || L[k] < L[fils2]){
-                    if(L[fils1]>L[fils2]){
-                        int b  = L[fils1];
+                if(((E) L[k]).compareTo((E) L[fils1]) < 0 || ((E) L[k]).compareTo((E) L[fils2]) < 0){
+                    if(((E) L[fils2]).compareTo((E) L[fils1]) < 0){
+                        Object b  =  L[fils1];
                         L[fils1] = L[k];
                         L[k] = b;
                         k = fils1;
                     }
                     else{
-                        int b  = L[fils2];
+                        Object b  = L[fils2];
                         L[fils2] = L[k];
                         L[k] = b;
                         k = fils2;
@@ -93,8 +93,8 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
             }
             else if(fils1<=end){
-                if(L[k] < L[fils1]){
-                    int b  = L[fils1];
+                if(((E) L[k]).compareTo((E) L[fils1]) < 0){
+                    Object b  = L[fils1];
                     L[fils1] = L[k];
                     L[k] = b;
                     k = fils1;
@@ -124,18 +124,18 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     }
 
     @Override
-    public Iterator<Integer> iterator() {
+    public Iterator<E> iterator() {
 
-        return new IntPriorityQueueIterator();
+        return new GenPriorityQueueIterator();
     }
 
 
-    class IntPriorityQueueIterator implements Iterator<Integer>{
+    class GenPriorityQueueIterator implements Iterator<E>{
         private int i;
         private int sizeP;
-        IntPriorityQueueIterator(){
+        GenPriorityQueueIterator(){
             i = 0;
-            sizeP = IntPriorityQueue.this.size();
+            sizeP = GenPriorityQueue.this.size();
         }
         @Override
         public boolean hasNext() {
@@ -143,10 +143,11 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
         }
 
         @Override
-        public Integer next() {
-            Integer C =  IntPriorityQueue.this.L[i];
+        public E next() {
+            E C =  (E) GenPriorityQueue.this.L[i];
             i++;
             return C;
         }
     }
+
 }
