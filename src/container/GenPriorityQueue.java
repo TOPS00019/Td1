@@ -2,6 +2,7 @@ package container;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Iterable<E> {
     private int cap;
@@ -10,6 +11,9 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
 
 
     public GenPriorityQueue (int capacity){
+        if(capacity<0){
+            throw new NegativeArraySizeException();
+        }
         this.cap = capacity;
         this.L = new Object[cap];
         this.end = -1;
@@ -19,9 +23,7 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
     static void main() {
 
     }
-
-    @Override
-    public boolean insertElement(E e) {
+    private void resize(){
         int old_cap = cap;
         if(end == cap-1){
             cap = (cap+1) * 2;
@@ -31,6 +33,11 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
             }
             L = M;
         }
+    }
+
+    @Override
+    public boolean insertElement(E e) {
+        this.resize();
         L[end+1] = e;
         int k = end + 1;
         int parent = 0;
@@ -53,16 +60,16 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
 
     @Override
     public E element() {
-        if(cap == 0){
-            return null;
+        if(isEmpty()){
+            throw new NoSuchElementException();
         }
         return (E) L[0];
     }
 
     @Override
     public E popElement() {
-        if(cap == 0){
-            return null;
+        if(isEmpty()){
+            throw new NoSuchElementException();
         }
         E a = (E) L[0];
         L[0] = L[end];
@@ -144,6 +151,9 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
 
         @Override
         public E next() {
+            if(!this.hasNext()){
+                throw new NoSuchElementException();
+            }
             E C =  (E) GenPriorityQueue.this.L[i];
             i++;
             return C;

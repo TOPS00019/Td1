@@ -1,6 +1,7 @@
 package container;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     private int cap;
@@ -9,6 +10,9 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
 
     public IntPriorityQueue (int capacity){
+        if(capacity<0){
+            throw new NegativeArraySizeException();
+        }
         this.cap = capacity;
         this.L = new Integer[cap];
         this.end = -1;
@@ -19,18 +23,22 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
     }
 
-
-    @Override
-    public boolean insertElement(Integer integer) {
+    private void resize(){
         int old_cap = cap;
         if(end == cap-1){
             cap = (cap+1) * 2;
             Integer[] M = new Integer[cap];
             for(int i=0; i<old_cap; i++){
-                 M[i] = L[i];
+                M[i] = L[i];
             }
             L = M;
         }
+    }
+
+
+    @Override
+    public boolean insertElement(Integer integer) {
+        this.resize();
         L[end+1] = integer;
         int k = end + 1;
         int parent = 0;
@@ -54,7 +62,7 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     @Override
     public Integer element() {
         if(this.isEmpty()){
-            return null;
+            throw new NoSuchElementException();
         }
         return L[0];
     }
@@ -62,7 +70,7 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     @Override
     public Integer popElement() {
         if(this.isEmpty()){
-            return null;
+            throw new NoSuchElementException();
         }
         int a = L[0];
         L[0] = L[end];
@@ -144,6 +152,9 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
         @Override
         public Integer next() {
+            if(!this.hasNext()){
+                throw new NoSuchElementException();
+            }
             Integer C =  IntPriorityQueue.this.L[i];
             i++;
             return C;

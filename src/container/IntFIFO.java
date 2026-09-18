@@ -1,6 +1,7 @@
 package container;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class IntFIFO implements Queue<Integer> {
     private int cap;
@@ -9,6 +10,9 @@ public class IntFIFO implements Queue<Integer> {
     private int end;
 
     IntFIFO(int capacity){
+        if(capacity<0){
+            throw new NegativeArraySizeException();
+        }
         cap = capacity;
         L = new Integer[cap];
         begin = 0;
@@ -17,16 +21,10 @@ public class IntFIFO implements Queue<Integer> {
     }
 
     static void main() {
-        IntFIFO f = new IntFIFO(3);
-        f.insertElement(42);
-        System.out.println(f.isEmpty());
-        System.out.println(f.element());
 
     }
 
-
-    @Override
-    public boolean insertElement(Integer integer) {
+    private void resize(){
         int old_cap = cap;
         boolean P = false;
         if((end) == begin){
@@ -55,6 +53,15 @@ public class IntFIFO implements Queue<Integer> {
 
 
         }
+    }
+
+
+    @Override
+    public boolean insertElement(Integer integer) {
+        int old_cap = cap;
+
+        this.resize();
+
         L[(end) % cap] = integer;
 
         end = (end+1)%(cap);
@@ -65,14 +72,17 @@ public class IntFIFO implements Queue<Integer> {
 
     @Override
     public Integer element() {
-        if(cap == 0){
-            return null;
+        if(isEmpty()){
+            throw new NoSuchElementException();
         }
         return L[begin];
     }
 
     @Override
     public Integer popElement() {
+        if(isEmpty()){
+            throw new NoSuchElementException();
+        }
         Integer a = L[begin];
         if(L[begin] != null){
             L[begin] = null;
@@ -129,7 +139,7 @@ public class IntFIFO implements Queue<Integer> {
         }
         @Override
         public boolean hasNext() {
-            if((i == e && t == true) || (i>e && i<b) || s == 0){
+            if((i == e && (t == true || e!=b))  || (i>e && i<b) || s == 0){
                 return false;
             }
             return true;
@@ -137,6 +147,9 @@ public class IntFIFO implements Queue<Integer> {
 
         @Override
         public Integer next() {
+            if(!this.hasNext()){
+                throw new NoSuchElementException();
+            }
             Integer C = IntFIFO.this.L[i];
             if(i==cap1-1){
                 t = true;
