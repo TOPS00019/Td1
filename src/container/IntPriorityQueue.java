@@ -1,18 +1,31 @@
 package container;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+
+class MyComparator implements Comparator<Integer> {
+
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return o1-o2;
+    }
+}
+
 
 public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     private int cap;
     private Integer[] L;
     private int end;
+    private Comparator<Integer> compar;
 
 
-    public IntPriorityQueue (int capacity){
+    public IntPriorityQueue (int capacity, Comparator<Integer> comparator){
         if(capacity<0){
             throw new NegativeArraySizeException();
         }
+        this.compar = comparator;
         this.cap = capacity;
         this.L = new Integer[cap];
         this.end = -1;
@@ -20,6 +33,7 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
     }
 
     static void main() {
+
 
     }
 
@@ -44,7 +58,7 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
         int parent = 0;
         while(k>0){
             parent = (int) Math.floor((k-1)/2);
-            if(L[parent] < L[k]){
+            if(this.compar.compare(L[parent],L[k])<0){
                 int a  = L[parent];
                 L[parent] = L[k];
                 L[k] = a;
@@ -81,8 +95,8 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
             int fils1 = 2*k+1;
             int fils2 = 2*k+2;
             if(fils2<=end){
-                if(L[k] < L[fils1] || L[k] < L[fils2]){
-                    if(L[fils1]>L[fils2]){
+                if( this.compar.compare(L[k],L[fils1])<0 || this.compar.compare(L[k],L[fils2])<0){
+                    if(this.compar.compare(L[fils2],L[fils1])<0){
                         int b  = L[fils1];
                         L[fils1] = L[k];
                         L[k] = b;
@@ -101,7 +115,7 @@ public class IntPriorityQueue implements Queue<Integer>, Iterable<Integer> {
 
             }
             else if(fils1<=end){
-                if(L[k] < L[fils1]){
+                if(this.compar.compare(L[k],L[fils1])<0){
                     int b  = L[fils1];
                     L[fils1] = L[k];
                     L[k] = b;

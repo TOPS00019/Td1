@@ -4,18 +4,24 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Iterable<E> {
+
+
+
+
+public class GenPriorityQueue<E extends Comparable<? super E>> implements Queue<E>,  Iterable<E> {
     private int cap;
-    private Object[] L;
+    private E L[];
     private int end;
+    private Comparator<? super E> compar;
 
 
-    public GenPriorityQueue (int capacity){
+    public GenPriorityQueue (int capacity, Comparator<? super E> comparator){
         if(capacity<0){
             throw new NegativeArraySizeException();
         }
+        this.compar = comparator;
         this.cap = capacity;
-        this.L = new Object[cap];
+        this.L = (E[]) new Comparable[cap];
         this.end = -1;
 
     }
@@ -27,7 +33,7 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
         int old_cap = cap;
         if(end == cap-1){
             cap = (cap+1) * 2;
-            Object[] M = new Object[cap];
+            E[] M = (E[]) new Comparable[cap];
             for(int i=0; i<old_cap; i++){
                 M[i] = L[i];
             }
@@ -43,8 +49,8 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
         int parent = 0;
         while(k>0){
             parent = (int) Math.floor((k-1)/2);
-            if(((E) L[parent]).compareTo((E) L[k]) < 0){
-                Object a  = L[parent];
+            if(this.compar.compare(L[parent], L[k]) < 0){
+                E a  = L[parent];
                 L[parent] = L[k];
                 L[k] = a;
                 k = parent;
@@ -80,15 +86,15 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
             int fils1 = 2*k+1;
             int fils2 = 2*k+2;
             if(fils2<=end){
-                if(((E) L[k]).compareTo((E) L[fils1]) < 0 || ((E) L[k]).compareTo((E) L[fils2]) < 0){
-                    if(((E) L[fils2]).compareTo((E) L[fils1]) < 0){
-                        Object b  =  L[fils1];
+                if(this.compar.compare(L[k], L[fils1]) < 0 || this.compar.compare(L[k], L[fils2]) < 0){
+                    if(this.compar.compare(L[fils2], L[fils1]) < 0){
+                        E b  =  L[fils1];
                         L[fils1] = L[k];
                         L[k] = b;
                         k = fils1;
                     }
                     else{
-                        Object b  = L[fils2];
+                        E b  = L[fils2];
                         L[fils2] = L[k];
                         L[k] = b;
                         k = fils2;
@@ -100,8 +106,8 @@ public class GenPriorityQueue<E extends Comparable<E>> implements Queue<E>,  Ite
 
             }
             else if(fils1<=end){
-                if(((E) L[k]).compareTo((E) L[fils1]) < 0){
-                    Object b  = L[fils1];
+                if(this.compar.compare(L[k], L[fils1]) < 0){
+                    E b  = L[fils1];
                     L[fils1] = L[k];
                     L[k] = b;
                     k = fils1;
